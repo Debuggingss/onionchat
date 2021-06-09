@@ -7,7 +7,7 @@ const server = http.createServer(app);
 const io = require('socket.io')(server);
 const path = require('path');
 
-app.use(express.static(path.join(__dirname,'./public')));
+app.use(express.static(path.join(__dirname, './public')));
 
 app.get('/chat', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
@@ -22,20 +22,20 @@ let name;
 
 io.on('connection', (socket) => {
     console.log('new user connected');
-    
-    socket.on('joining msg', (username) => {
-    	name = username;
-		socket.name = name;
-		
-		let dupeCount = 0;
-		
-		io.of('/').sockets.forEach(s => {
-			if(s.name === socket.name) dupeCount++;
-		});
 
-        if(nameRegex.test(name) && dupeCount === 1) {
+    socket.on('joining msg', (username) => {
+        name = username;
+        socket.name = name;
+
+        let dupeCount = 0;
+
+        io.of('/').sockets.forEach(s => {
+            if (s.name === socket.name) dupeCount++;
+        });
+
+        if (nameRegex.test(name) && dupeCount === 1) {
             console.log(`${name} has connected.`);
-    	    io.emit('chat message', `   ${name} joined.`);
+            io.emit('chat message', `   ${name} joined.`);
         } else {
             socket.killed = true;
             socket.disconnect();
@@ -44,19 +44,19 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-		if(!socket.killed) {
-			console.log(`${name} has disconnected.`);
-			io.emit('chat message', `   ${name} left.`);
-		}
+        if (!socket.killed) {
+            console.log(`${name} has disconnected.`);
+            io.emit('chat message', `   ${name} left.`);
+        }
     });
 
     socket.on('chat message', (msg) => {
         socket.broadcast.emit('chat message', `${socket.name}: ${msg}`);
 
-        if(msg && msg.startsWith(COMMAND_PREFIX)) {
+        if (msg && msg.startsWith(COMMAND_PREFIX)) {
             let response;
 
-            switch(msg.replace(COMMAND_PREFIX, "").split(" ")[0]) {
+            switch (msg.replace(COMMAND_PREFIX, "").split(" ")[0]) {
                 case "users":
                     let names = [];
 

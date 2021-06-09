@@ -1,55 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-    	<title>Onion Chatroom</title>
-    	<meta charset="utf-8">
-    	<meta name="viewport" content="width=device-width, initial-scale=1">
-    	<link rel = "stylesheet" href="dchat/style.css">
-        <link rel="shortcut icon" type="image/jpg" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Tor_Browser_icon.svg/1200px-Tor_Browser_icon.svg.png"/>
-    	<script>
-            const regPattern = /^[A-Za-z0-9]{2,16}$/;
 
-    		let name = prompt("Enter a display name. (a-z A-Z 0-9) (2-16 Characters)");
-            let regResult = regPattern.test(name);
+<head>
+    <title>Onion Chatroom</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="dchat/style.css">
+    <link rel="shortcut icon" type="image/jpg"
+        href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Tor_Browser_icon.svg/1200px-Tor_Browser_icon.svg.png" />
+    <script>
+        const regPattern = /^[A-Za-z0-9]{2,16}$/;
 
-            while(regResult === false) {
-                name = prompt("Enter a display name. (a-z A-Z 0-9) (2-16 Characters)");
-		        regResult = regPattern.test(name);
-            }
-    	</script>
-    </head>
-    <body>
-        <ul id="messages"></ul>
+        let name = prompt("Enter a display name. (a-z A-Z 0-9) (2-16 Characters)");
+        let regResult = regPattern.test(name);
 
-        <form action="">
-          <input id="m" placeholder="Enter your message..." autocomplete="off" required />
-        </form>
+        while (regResult === false) {
+            name = prompt("Enter a display name. (a-z A-Z 0-9) (2-16 Characters)");
+            regResult = regPattern.test(name);
+        }
+    </script>
+</head>
 
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script>
-        	let socket = io();
+<body>
+    <ul id="messages"></ul>
 
-        	socket.emit('joining msg', name);
+    <form action="">
+        <input id="m" placeholder="Enter your message..." autocomplete="off" required />
+    </form>
 
-        	$('form').submit((e) => {
-        		e.preventDefault();
-                socket.emit('chat message', $('#m').val());
-                $('#messages').append($('<li id="list">').text(name + ' (You): ' + $('#m').val()));
-          		$('#m').val('');
-                window.scrollBy(0, 100);
-          		return false;
-        	});
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+        let socket = io();
 
-        	socket.on('chat message', (msg) => {
-          		$('#messages').append($('<li>').text(msg));
-                window.scrollBy(0, 100);
-        	});
-			
-			socket.on('disconnect', () => {
-				alert("You have been disconnected by the server. Press 'Okay' to reload the page. Connection lost or name already exists/contains invalid characters.");
-                window.location.reload();
-            });
-        </script>
-    </body>
+        socket.emit('joining msg', name);
+
+        $('form').submit((e) => {
+            e.preventDefault();
+            socket.emit('chat message', $('#m').val());
+            $('#messages').append($('<li id="list">').text(name + ' (You): ' + $('#m').val()));
+            $('#m').val('');
+            window.scrollBy(0, 100);
+            return false;
+        });
+
+        socket.on('chat message', (msg) => {
+            $('#messages').append($('<li>').text(msg));
+            window.scrollBy(0, 100);
+        });
+
+        socket.on('disconnect', () => {
+            alert("You have been disconnected by the server. Press 'Okay' to reload the page. Connection lost or name already exists/contains invalid characters.");
+            window.location.reload();
+        });
+    </script>
+</body>
+
 </html>
