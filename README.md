@@ -19,10 +19,10 @@ Note: I am not a Tor expert myself but this looks much safer than just setting t
 
 (If you find any issues in the nginx config down below, please let me know.)
 
-You will need to add this into your `server` block in your nginx sites-enabled config:
+You will need to add this to your `server` block in your nginx sites-enabled config:
 ```
 location /chat {
-		proxy_pass http://localhost:3000;
+    proxy_pass http://localhost:3000;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection 'upgrade';
