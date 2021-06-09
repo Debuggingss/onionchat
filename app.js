@@ -10,7 +10,7 @@ const path = require('path');
 app.use(express.static(path.join(__dirname,'./public')));
 
 app.get('/chat', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/public/index.html');
 });
 
 const COMMAND_PREFIX = "!";
@@ -37,19 +37,14 @@ io.on('connection', (socket) => {
             console.log(`${name} has connected.`);
     	    io.emit('chat message', `   ${name} joined.`);
         } else {
+            socket.killed = true;
             socket.disconnect();
             console.log(`User tried to join with the name '${name}' which was determined to be invalid.`);
         }
     });
 
     socket.on('disconnect', () => {
-        let dupeCount = 0;
-		
-		io.of('/').sockets.forEach(s => {
-			if(s.name === socket.name) dupeCount++;
-		});
-
-		if(nameRegex.test(name) && dupeCount === 2) {
+		if(!socket.killed) {
 			console.log(`${name} has disconnected.`);
 			io.emit('chat message', `   ${name} left.`);
 		}
@@ -62,15 +57,14 @@ io.on('connection', (socket) => {
             let response;
 
             switch(msg.replace(COMMAND_PREFIX, "").split(" ")[0]) {
-                case "example":
-                    response = "Example command!";
+                case "users":
+                    let names = [];
 
-                    socket.broadcast.emit('chat message', `${COMMAND_RESPONDER}: ${response}`);
-                    socket.emit('chat message', `${COMMAND_RESPONDER}: ${response}`);
-                    break;
+                    io.of('/').sockets.forEach(s => {
+                        names.push(s.name);
+                    });
 
-                case "example2":
-                    response = "2nd Example command!";
+                    response = `Online (${names.length}): ${names.join(", ")}`;
 
                     socket.broadcast.emit('chat message', `${COMMAND_RESPONDER}: ${response}`);
                     socket.emit('chat message', `${COMMAND_RESPONDER}: ${response}`);
