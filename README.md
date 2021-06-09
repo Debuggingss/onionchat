@@ -1,2 +1,2 @@
 # onionchat
-Simple Socket,
+Simple Socket.IO Chat Room
