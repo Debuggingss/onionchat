@@ -2,58 +2,74 @@
 <html lang="en">
 
 <head>
-    <title>Onion Chatroom</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="dchat/style.css">
-    <link rel="shortcut icon" type="image/jpg"
-        href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Tor_Browser_icon.svg/1200px-Tor_Browser_icon.svg.png" />
-    <script>
-        const regPattern = /^[A-Za-z0-9]{2,16}$/;
+	<title>Onion Chatroom</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/chat/static/style.css">
+	<link rel="shortcut icon" type="image/jpg"
+		href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Tor_Browser_icon.svg/1200px-Tor_Browser_icon.svg.png" />
+	<script>
+		const regPattern = /^[A-Za-z0-9]{2,16}$/;
 
-        let name = prompt("Enter a display name. (a-z A-Z 0-9) (2-16 Characters)");
-        let regResult = regPattern.test(name);
+		let name = prompt("Enter a display name. (a-z A-Z 0-9) (2-16 Characters)");
+		let regResult = regPattern.test(name);
 
-        while (regResult === false) {
-            name = prompt("Enter a display name. (a-z A-Z 0-9) (2-16 Characters)");
-            regResult = regPattern.test(name);
-        }
-    </script>
+		while (regResult === false) {
+			name = prompt("Enter a display name. (a-z A-Z 0-9) (2-16 Characters)");
+			regResult = regPattern.test(name);
+		}
+	</script>
 </head>
 
 <body>
-    <ul id="messages"></ul>
+	<ul id="infoboard"></ul>
+	<ul id="messages"></ul>
 
-    <form action="">
-        <input id="m" placeholder="Enter your message..." autocomplete="off" required />
-    </form>
+	<form action="">
+		<input id="m" placeholder="Enter your message..." autocomplete="off" required />
+	</form>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script>
-        let socket = io();
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script>
+		let socket = io();
 
-        socket.emit('joining msg', name);
+		socket.emit('joining msg', name);
 
-        $('form').submit((e) => {
-            e.preventDefault();
-            socket.emit('chat message', $('#m').val());
-            $('#messages').append($('<li id="list">').text(name + ' (You): ' + $('#m').val()));
-            $('#m').val('');
-            window.scrollBy(0, 100);
-            return false;
-        });
+		$('#infoboard').append($('<li id="info">').text('Welcome to Debug\'s OnionChat!'));
+		$('#infoboard').append($('<li id="info">').text('Each message has a character limit of 1000.'));
+		$('#infoboard').append($('<li id="info">').text('Commands:'));
+		$('#infoboard').append($('<li id="info">').text('!users - Returns a list of connected users.'));
 
-        socket.on('chat message', (msg) => {
-            $('#messages').append($('<li>').text(msg));
-            window.scrollBy(0, 100);
-        });
+		$('form').submit((e) => {
+			e.preventDefault();
+			socket.emit('chat message', $('#m').val());
+			$('#messages').append($('<li id="own-message">').text(name + ' (You): ' + $('#m').val().substring(0, 1000)));
+			$('#m').val('');
+			window.scrollBy(0, 100);
+			return false;
+		});
 
-        socket.on('disconnect', () => {
-            alert("You have been disconnected by the server. Press 'Okay' to reload the page. Connection lost or name already exists/contains invalid characters.");
-            window.location.reload();
-        });
-    </script>
+		socket.on('chat message', (msg) => {
+			$('#messages').append($('<li>').text(msg));
+			window.scrollTo(0, document.body.scrollHeight);
+		});
+
+		socket.on('user joined', (username) => {
+			$('#messages').append($('<li id="user-joined">').text(`● ${username} joined.`));
+			window.scrollTo(0, document.body.scrollHeight);
+		});
+
+		socket.on('user left', (username) => {
+			$('#messages').append($('<li id="user-left">').text(`● ${username} left.`));
+			window.scrollTo(0, document.body.scrollHeight);
+		});
+
+		socket.on('disconnect', () => {
+			alert("You have been disconnected by the server. Press 'Okay' to reload the page. Connection lost or name already exists/contains invalid characters.");
+			window.location.reload();
+		});
+	</script>
 </body>
 
 </html>

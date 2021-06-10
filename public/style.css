@@ -17,6 +17,7 @@ form {
 
 form input {
  	background-color: #420C5D;
+    color: #fff;
  	border: 1;
  	padding: 10px;
  	width: 100%;
@@ -25,6 +26,7 @@ form input {
 #messages {
  	margin: 0;
  	padding: 0;
+    padding-bottom: 50px;
 }
 
 #messages li {
@@ -35,8 +37,25 @@ form input {
  	background: #eee;
 }
 
-#list {
-	text-align: left;
-	border: #000 solid black;
+#own-message {
 	color: #420C5D;
+}
+
+#user-joined {
+    color: rgb(0, 150, 0);
+}
+
+#user-left {
+    color: rgb(150, 0, 0);
+}
+
+#infoboard {
+    margin: 0;
+    padding: 0;
+}
+
+#info {
+	padding: 5px 10px;
+    background: #420C5D;
+    color: #ddd;
 }
