@@ -39,3 +39,6 @@ location /socket.io/ {
     proxy_cache_bypass $http_upgrade;
 }
 ```
+
+Screenshot:
+![image](https://user-images.githubusercontent.com/55459283/121789340-7537dd00-cbd5-11eb-86ba-223a8fb4ffd7.png)
