@@ -21,8 +21,6 @@ const nameRegex = /^[A-Za-z0-9]{2,16}$/;
 let name;
 
 io.on('connection', (socket) => {
-	console.log('new user connected');
-
 	socket.on('joining msg', (username) => {
 		name = username;
 		socket.name = name;
@@ -33,7 +31,7 @@ io.on('connection', (socket) => {
 			if (s.name === socket.name) dupeCount++;
 		});
 
-		if (nameRegex.test(name) && dupeCount === 1) {
+		if (name !== null && nameRegex.test(name) && dupeCount === 1) {
 			console.log(`${name} has connected.`);
 			io.emit('user joined', name);
 		} else {
